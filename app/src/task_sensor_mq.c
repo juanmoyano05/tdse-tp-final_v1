@@ -1,0 +1,208 @@
+/*
+ * Copyright (c) 2026 Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
+ */
+
+/********************** inclusions *******************************************/
+/* Project includes */
+#include "main.h"
+
+/* Demo includes */
+#include "logger.h"
+#include "dwt.h"
+
+/* Application & Tasks includes */
+#include "board.h"
+#include "app.h"
+#include "app_it.h"
+#include "task_system_attribute.h"
+#include "task_system_interface.h"
+#include "task_sensor_mq_attribute.h"
+
+/********************** macros and definitions *******************************/
+//#define DEL_BTN_MIN		0ul
+//#define DEL_BTN_MED		25ul
+//#define DEL_BTN_MAX		50ul
+
+#define SENSOR_MQ_CFG_QTY		(sizeof(task_sensor_mq_cfg_list)/sizeof(task_sensor_mq_cfg_t))
+#define SENSOR_MQ_DTA_QTY		SENSOR_MQ_CFG_QTY
+
+#define TICK_MAX 1000
+#define RAFAGA_COUNT 10
+
+/********************** internal data declaration ****************************/
+const task_sensor_mq_cfg_t task_sensor_mq_cfg_list[] = {
+		{ ID_SENSOR_MQ4, TICK_MAX } // MQ 4
+		//{ ID_SENSOR_MQ135, GPIOPORTA, PA2, 0, TICK_MAX }, // MQ 135
+};
+
+task_sensor_mq_dta_t task_sensor_mq_dta_list[SENSOR_MQ_DTA_QTY];
+
+/********************** internal functions declaration ***********************/
+void task_sensor_mq_statechart(uint32_t index);
+
+/********************** internal data definition *****************************/
+const char *p_task_sensor_mq 		= "Task Sensor MQ (Sensor MQ Statechart)";
+const char *p_task_sensor_mq_ 		= "Non-Blocking Code";
+const char *p_task_sensor_mq__ 	= "(Update by Time Code, period = 1mS)";
+
+/********************** external data declaration ****************************/
+extern volatile bool g_adc1_b_trig_new_conversion;
+extern ADC_HandleTypeDef hadc1;
+extern volatile uint32_t g_adc1_vector_leido[RAFAGA_COUNT];
+
+/********************** external functions definition ************************/
+void task_sensor_mq_init(void *parameters)
+{
+	uint32_t index;
+	task_sensor_mq_dta_t *p_task_sensor_mq_dta;
+	task_sensor_mq_st_t state;
+	task_sensor_mq_ev_t event;
+
+	/* Print out: Task Initialized */
+	LOGGER_INFO(" ");
+	LOGGER_INFO("  %s is running - Tick [mS] = %lu", GET_NAME(task_sensor_init), HAL_GetTick());
+	LOGGER_INFO("   %s is a %s", GET_NAME(task_sensor), p_task_sensor_mq);
+	LOGGER_INFO("   %s is a %s", GET_NAME(task_sensor), p_task_sensor_mq_);
+	LOGGER_INFO("   %s is a %s", GET_NAME(task_sensor), p_task_sensor_mq__);
+
+	for (index = 0; SENSOR_MQ_DTA_QTY > index; index++)
+	{
+		/* Update Task Sensor Data Pointer */
+		p_task_sensor_mq_dta = &task_sensor_mq_dta_list[index];
+
+		/* Init & Print out: Index & Task execution FSM */
+		state = ST_SENSOR_MQ_IDLE;
+		p_task_sensor_mq_dta->state = state;
+
+		event = EV_SENSOR_MQ_IDLE;
+		p_task_sensor_mq_dta->event = event;
+
+		g_adc1_sample_idx = 0;
+
+		for ( uint32_t i = 0; i < RAFAGA_COUNT; i++) {
+			g_adc1_vector_leido[i] = 67;
+		}
+
+		LOGGER_INFO(" ");
+		LOGGER_INFO("   %s = %lu   %s = %lu   %s = %lu",
+				    GET_NAME(index), index,
+					GET_NAME(state), (uint32_t)state,
+					GET_NAME(event), (uint32_t)event);
+	}
+}
+
+void task_sensor_mq_update(void *parameters)
+{
+	uint32_t index;
+
+	for (index = 0; SENSOR_MQ_DTA_QTY > index; index++)
+	{
+		/* Run Task Statechart */
+		task_sensor_mq_statechart(index);
+	}
+}
+
+void task_sensor_mq_statechart(uint32_t index)
+{
+	const task_sensor_mq_cfg_t *p_task_sensor_mq_cfg;
+	task_sensor_mq_dta_t *p_task_sensor_mq_dta;
+
+	for (index = 0; SENSOR_MQ_DTA_QTY > index; index++)
+	{
+		/* Update Task Sensor Configuration & Data Pointer */
+		p_task_sensor_mq_cfg = &task_sensor_mq_cfg_list[index];
+		p_task_sensor_mq_dta = &task_sensor_mq_dta_list[index];
+
+		switch (p_task_sensor_mq_dta->state)
+		{
+			case ST_SENSOR_MQ_IDLE:
+				p_task_sensor_mq_dta->state = ST_SENSOR_MQ_WAITING;
+				p_task_sensor_mq_dta->tick = TICK_MAX;
+				break;
+
+			case ST_SENSOR_MQ_WAITING:
+
+				p_task_sensor_mq_dta->tick--;
+				if (p_task_sensor_mq_dta->tick == 0)
+				{
+					p_task_sensor_mq_dta->state = ST_SENSOR_MQ_SENSING;
+				}
+
+				break;
+
+			case ST_SENSOR_MQ_SENSING:
+
+				bool b_done = false;
+
+				if (g_adc1_sample_idx>=RAFAGA_COUNT) {
+					b_done = true;
+					goto test3_tick_end;
+				}
+
+				/* start of first conversion */
+				if (0==g_adc1_sample_idx) {
+					g_adc1_b_trig_new_conversion = true;
+				}
+
+
+				if (g_adc1_b_trig_new_conversion) {
+					g_adc1_b_trig_new_conversion = false;
+					HAL_ADC_Start_IT(&hadc1);
+				}
+
+test3_tick_end:
+				if (b_done) {
+					uint32_t acum = 0;
+					for (g_adc1_sample_idx=0;g_adc1_sample_idx<RAFAGA_COUNT;g_adc1_sample_idx++) {
+						LOGGER_LOG("%ul\n",g_adc1_vector_leido[g_adc1_sample_idx] );
+						acum += g_adc1_vector_leido[g_adc1_sample_idx];
+					}
+					LOGGER_LOG("\n\nPROMEDIO: %ul\n", acum/RAFAGA_COUNT);
+					p_task_sensor_mq_dta->valor_leido_adc1 = acum/RAFAGA_COUNT;
+					g_adc1_sample_idx = 0;
+				}
+
+				break;
+
+			default:
+
+				p_task_sensor_mq_dta->tick  = TICK_MAX;
+				p_task_sensor_mq_dta->state = ST_SENSOR_MQ_IDLE;
+				p_task_sensor_mq_dta->event = EV_SENSOR_MQ_IDLE;
+
+			break;
+		}
+	}
+}
+
+/********************** end of file ******************************************/
