@@ -70,6 +70,9 @@ const char *p_task_sensor_sht30_ 		= "Non-Blocking Code";
 const char *p_task_sensor_sht30__ 		= "(Update by Time Code, period = 1mS)";
 
 /********************** external data declaration ****************************/
+volatile bool g_i2c_sht30_transmit_complete;
+
+
 
 /********************** external functions definition ************************/
 void task_sensor_sht30_init(void *parameters)
@@ -136,9 +139,26 @@ void task_sensor_sht30_statechart(uint32_t index)
 		case ST_SENSOR_SHT30_WAITING:
 			p_task_sensor_sht30_dta->tick--;
 			if ( p_task_sensor_sht30_dta->tick == 0 ) {
-				p_task_sensor_sht30_dta->state = ST_SENSOR_SHT30_SENSING;
+				p_task_sensor_sht30_dta->state = ST_SENSOR_SHT30_TRANSMITING;
+				// TODO: SEND I2C REQUEST TO SHT30
+				// Codigo de gemini:
+				/*
+				 * dev->tx_buf[0] = SHT30_CMD_MEAS_HIGH_MSB;
+                 * dev->tx_buf[1] = SHT30_CMD_MEAS_HIGH_LSB;
+                 * dev->state = SHT30_STATE_TX_CMD;
+
+                 * if (HAL_I2C_Master_Transmit_IT(dev->hi2c, dev->dev_addr, dev->tx_buf, 2U) != HAL_OK) {
+                 *    dev->state = SHT30_STATE_ERROR;
+                 * }
+				 */
 			}
 			break;
+
+		case ST_SENSOR_SHT30_TRANSMITING:
+			if ( g_i2c_sht30_transmit_complete ) {
+				p_task_sensor_sht30_dta->state = ST_SENSOR_SHT30_SENSING;
+				g_i2c_sht30_transmit_complete = false;
+			}
 
 		case ST_SENSOR_SHT30_SENSING:
 

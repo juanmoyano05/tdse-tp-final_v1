@@ -43,6 +43,7 @@
 /* Application & Tasks includes */
 #include "board.h"
 #include "task_sensor_mq_attribute.h"
+#include "task_sensor_sht30_attribute.h"
 
 /********************** macros and definitions *******************************/
 
@@ -61,12 +62,17 @@ volatile uint32_t 		 g_adc1_vector_leido[RAFAGA_COUNT];
 volatile uint32_t 		 g_adc1_sample_idx;
 volatile bool 	  		 g_adc1_b_trig_new_conversion;
 extern ADC_HandleTypeDef hadc1;
-
 // MQ 135
 volatile uint32_t 		 g_adc2_vector_leido[RAFAGA_COUNT];
 volatile uint32_t 		 g_adc2_sample_idx;
 volatile bool 	  		 g_adc2_b_trig_new_conversion;
 extern ADC_HandleTypeDef hadc2;
+
+/* SHT 30 vars */
+extern volatile	bool	 g_i2c_sht30_transmit_complete;
+volatile uint8_t 		 g_i2c_tx_buf[2];
+volatile uint8_t 		 g_i2c_rx_buf[6];
+extern I2C_HandleTypeDef hi2c1;
 
 
 /********************** external functions definition ************************/
@@ -115,7 +121,22 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
 			g_adc2_b_trig_new_conversion = true;
 		}
 	}
+}
 
+
+/* I2C callbacks */
+void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) { // transmit complete
+	if ( hi2c->Devaddress == SHT_30_I2C_ADDR  ) {
+		g_i2c_sht30_transmit_complete = true;
+	}
+}
+
+void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
+    SHT30_RxCpltCallback(&hsht30, hi2c);
+}
+
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c) {
+    SHT30_ErrorCallback(&hsht30, hi2c);
 }
 
 /********************** end of file ******************************************/

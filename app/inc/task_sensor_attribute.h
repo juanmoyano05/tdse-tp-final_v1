@@ -32,8 +32,8 @@
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  */
 
-#ifndef TASK_SENSOR_SHT30_ATTRIBUTE_H_
-#define TASK_SENSOR_SHT30_ATTRIBUTE_H_
+#ifndef TASK_SENSOR_ATTRIBUTE_H_
+#define TASK_SENSOR_ATTRIBUTE_H_
 
 /********************** CPP guard ********************************************/
 #ifdef __cplusplus
@@ -46,32 +46,37 @@ extern "C" {
 
 /********************** typedef **********************************************/
 /* Events to excite Task Sensor */
-typedef enum task_sensor_sht30_ev { EV_SENSOR_SHT30_IDLE } task_sensor_ev_t;
+typedef enum task_sensor_ev {EV_BTN_UP,
+							 EV_BTN_DOWN} task_sensor_ev_t;
 
 /* States of Task Sensor */
-typedef enum task_sensor_sht30_st { ST_SENSOR_SHT30_IDLE,
-							        ST_SENSOR_SHT30_WAITING,
-									ST_SENSOR_SHT30_SENSING } task_sensor_st_t;
+typedef enum task_sensor_st {ST_BTN_UP,
+							 ST_BTN_FALLING,
+							 ST_BTN_DOWN,
+						     ST_BTN_RISING} task_sensor_st_t;
+
+/* Identifier of Task Sensor */
+typedef enum task_sensor_id {ID_BTN_A,
+							 ID_BTN_ENT,
+							 ID_BTN_NEX,
+							 ID_BTN_ESC} task_sensor_id_t;
 
 typedef struct
 {
-	//GPIO_TypeDef *		gpio_port;
-	//uint16_t			pin;
-	//GPIO_PinState		pressed;
+	task_sensor_id_t	identifier;
+	GPIO_TypeDef *		gpio_port;
+	uint16_t			pin;
+	GPIO_PinState		pressed;
 	uint32_t			tick_max;
-} task_sensor_sht30_cfg_t;
-
-typedef struct {
-	uint32_t temperatura;
-	uint32_t humedad_relativa;
-} task_sensor_sht30_data;
+	task_system_ev_t	signal_up;
+	task_system_ev_t	signal_down;
+} task_sensor_cfg_t;
 
 typedef struct
 {
-	uint32_t				tick;
-	task_sensor_sht30_st_t	state;
-	task_sensor_sht30_ev_t	event;
-	task_sensor_sht30_data	dato_recibido;
+	uint32_t			tick;
+	task_sensor_st_t	state;
+	task_sensor_ev_t	event;
 } task_sensor_dta_t;
 
 /********************** external data declaration ****************************/
