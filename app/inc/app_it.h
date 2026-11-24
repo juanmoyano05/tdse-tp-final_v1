@@ -48,7 +48,6 @@ extern "C" {
 
 /********************** external data declaration ****************************/
 extern volatile uint32_t g_app_tick_cnt;
-extern volatile uint32_t g_adc1_sample_idx;
 
 /********************** external functions declaration ***********************/
 extern void app_it_init(void);

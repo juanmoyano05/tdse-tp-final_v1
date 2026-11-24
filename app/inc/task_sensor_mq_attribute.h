@@ -63,6 +63,7 @@ typedef enum task_sensor_mq_id {ID_SENSOR_MQ4,
 typedef struct
 {
 	task_sensor_mq_id_t	identifier;
+	ADC_HandleTypeDef   *hadc;
 	uint32_t			tick_max;
 } task_sensor_mq_cfg_t;
 
@@ -71,7 +72,10 @@ typedef struct
 	uint32_t			tick;
 	task_sensor_mq_st_t	state;
 	task_sensor_mq_ev_t	event;
-	uint32_t			valor_leido_adc1;
+	uint32_t			valor_leido;
+	volatile bool       *b_trig_new_conversion;
+	volatile uint32_t	*vector_leido;
+	volatile uint32_t	*sample_idx;
 } task_sensor_mq_dta_t;
 
 /********************** external data declaration ****************************/

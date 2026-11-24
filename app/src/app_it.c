@@ -54,10 +54,19 @@
 
 /********************** external data declaration ****************************/
 volatile uint32_t g_app_tick_cnt;
-volatile uint32_t g_adc1_vector_leido[RAFAGA_COUNT];
-volatile uint32_t g_adc1_sample_idx;
-volatile bool g_adc1_b_trig_new_conversion;
+
+/* MQ vars */
+// MQ 4
+volatile uint32_t 		 g_adc1_vector_leido[RAFAGA_COUNT];
+volatile uint32_t 		 g_adc1_sample_idx;
+volatile bool 	  		 g_adc1_b_trig_new_conversion;
 extern ADC_HandleTypeDef hadc1;
+
+// MQ 135
+volatile uint32_t 		 g_adc2_vector_leido[RAFAGA_COUNT];
+volatile uint32_t 		 g_adc2_sample_idx;
+volatile bool 	  		 g_adc2_b_trig_new_conversion;
+extern ADC_HandleTypeDef hadc2;
 
 
 /********************** external functions definition ************************/
@@ -93,10 +102,20 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 /* ADC callback */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
 
-	g_adc1_vector_leido[g_adc1_sample_idx++] = HAL_ADC_GetValue(&hadc1);
-	if (g_adc1_sample_idx<RAFAGA_COUNT) {
-		g_adc1_b_trig_new_conversion = true;
+	if ( hadc == &hadc1 ) {
+		uint32_t valor = HAL_ADC_GetValue(&hadc1);
+		g_adc1_vector_leido[g_adc1_sample_idx++] = valor;
+		if (g_adc1_sample_idx<RAFAGA_COUNT) {
+			g_adc1_b_trig_new_conversion = true;
+		}
+	} else if ( hadc == &hadc2 ) {
+		uint32_t valor = HAL_ADC_GetValue(&hadc2);
+		g_adc2_vector_leido[g_adc2_sample_idx++] = valor;
+		if (g_adc2_sample_idx<RAFAGA_COUNT) {
+			g_adc2_b_trig_new_conversion = true;
+		}
 	}
+
 }
 
 /********************** end of file ******************************************/
