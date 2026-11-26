@@ -1,9 +1,0 @@
-../app/src/sht30.c:11:16:SHT30_CheckCRC	4
-../app/src/sht30.c:27:6:SHT30_Init	1
-../app/src/sht30.c:36:18:SHT30_StartMeasurement	2
-../app/src/sht30.c:48:18:SHT30_StartReceive	2
-../app/src/sht30.c:58:18:SHT30_GetData	3
-../app/src/sht30.c:74:6:SHT30_Abort	1
-../app/src/sht30.c:79:6:SHT30_TxCpltCallback	2
-../app/src/sht30.c:85:6:SHT30_RxCpltCallback	2
-../app/src/sht30.c:91:6:SHT30_ErrorCallback	2

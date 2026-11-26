@@ -1,7 +1,0 @@
-../app/src/app_it.c:78:6:app_it_init	1
-../app/src/app_it.c:87:6:HAL_SYSTICK_Callback	1
-../app/src/app_it.c:98:6:HAL_GPIO_EXTI_Callback	1
-../app/src/app_it.c:108:6:HAL_ADC_ConvCpltCallback	5
-../app/src/app_it.c:127:6:HAL_I2C_MasterTxCpltCallback	1
-../app/src/app_it.c:131:6:HAL_I2C_MasterRxCpltCallback	1
-../app/src/app_it.c:135:6:HAL_I2C_ErrorCallback	1

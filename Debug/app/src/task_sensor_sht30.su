@@ -1,3 +1,0 @@
-../app/src/task_sensor_sht30.c:78:6:task_sensor_sht30_init	64	static,ignoring_inline_asm
-../app/src/task_sensor_sht30.c:116:6:task_sensor_sht30_update	24	static
-../app/src/task_sensor_sht30.c:127:6:task_sensor_sht30_statechart	32	static,ignoring_inline_asm

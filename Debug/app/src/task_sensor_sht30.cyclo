@@ -1,3 +1,0 @@
-../app/src/task_sensor_sht30.c:78:6:task_sensor_sht30_init	2
-../app/src/task_sensor_sht30.c:116:6:task_sensor_sht30_update	2
-../app/src/task_sensor_sht30.c:127:6:task_sensor_sht30_statechart	17
