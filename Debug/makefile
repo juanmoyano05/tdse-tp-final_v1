@@ -61,8 +61,8 @@ all: main-build
 main-build: tdse-tp-final_v1.elf secondary-outputs
 
 # Tool invocations
-tdse-tp-final_v1.elf tdse-tp-final_v1.map: $(OBJS) $(USER_OBJS) C:\Users\baska\STM32CubeIDE\workspace_1.19.0\tdse-tp-final_v1\STM32F103RBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "tdse-tp-final_v1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\baska\STM32CubeIDE\workspace_1.19.0\tdse-tp-final_v1\STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="tdse-tp-final_v1.map" -Wl,--gc-sections -static -specs=rdimon.specs --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+tdse-tp-final_v1.elf tdse-tp-final_v1.map: $(OBJS) $(USER_OBJS) C:\Users\koko\STM32CubeIDE\workspace_1.19.0\tdse-tp-final_v1\STM32F103RBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "tdse-tp-final_v1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\koko\STM32CubeIDE\workspace_1.19.0\tdse-tp-final_v1\STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="tdse-tp-final_v1.map" -Wl,--gc-sections -static -specs=rdimon.specs --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

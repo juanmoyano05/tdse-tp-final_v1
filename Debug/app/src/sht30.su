@@ -1,0 +1,9 @@
+../app/src/sht30.c:11:16:SHT30_CheckCRC	24	static
+../app/src/sht30.c:27:6:SHT30_Init	16	static
+../app/src/sht30.c:36:18:SHT30_StartMeasurement	16	static
+../app/src/sht30.c:48:18:SHT30_StartReceive	16	static
+../app/src/sht30.c:58:18:SHT30_GetData	24	static
+../app/src/sht30.c:74:6:SHT30_Abort	16	static
+../app/src/sht30.c:79:6:SHT30_TxCpltCallback	16	static
+../app/src/sht30.c:85:6:SHT30_RxCpltCallback	16	static
+../app/src/sht30.c:91:6:SHT30_ErrorCallback	16	static

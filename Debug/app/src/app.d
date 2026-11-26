@@ -22,12 +22,13 @@ app/src/app.o: ../app/src/app.c ../Core/Inc/main.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h \
+ ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
  ../app/inc/logger.h ../app/inc/dwt.h ../app/inc/board.h \
  ../app/inc/app_it.h ../app/inc/task_sensor.h ../app/inc/task_system.h \
  ../app/inc/task_actuator.h ../app/inc/task_display.h \
- ../app/inc/task_sensor_mq.h
+ ../app/inc/task_sensor_mq.h ../app/inc/task_sensor_sht30.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
@@ -52,6 +53,7 @@ app/src/app.o: ../app/src/app.c ../Core/Inc/main.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc_ex.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h:
 ../app/inc/logger.h:
@@ -63,3 +65,4 @@ app/src/app.o: ../app/src/app.c ../Core/Inc/main.h \
 ../app/inc/task_actuator.h:
 ../app/inc/task_display.h:
 ../app/inc/task_sensor_mq.h:
+../app/inc/task_sensor_sht30.h:
